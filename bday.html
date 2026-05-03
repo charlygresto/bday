@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday!</title>
+  <style>
+    /* --- RESET & GLOBAL STYLES --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      color: #333;
+    }
+
+    .container {
+      width: 820px;
+      max-width: 95%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      color: #d63384;
+      font-size: 2.6rem;
+      margin-bottom: 6px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .subtitle {
+      color: #6c757d;
+      margin-bottom: 28px;
+      font-size: 1.05rem;
+    }
+
+    /* --- CAKE & CANDLES STACKING (FIXED) --- */
+    .cake-container {
+      position: relative;
+      width: 320px;
+      height: 280px;
+      margin: 0 auto 26px;
+    }
+
+    .cake {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Cake layers */
+    .cake-base {
+      width: 240px;
+      height: 80px;
+      background: linear-gradient(to bottom, #8B4513, #A0522D, #8B4513);
+      border-radius: 18px 18px 6px 6px;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+      z-index: 1;
+    }
+
+    .cake-middle {
+      width: 200px;
+      height: 60px;
+      background: linear-gradient(to bottom, #FFB6C1, #FF69B4, #FFB6C1);
+      border-radius: 16px 16px 6px 6px;
+      position: absolute;
+      left: 50%;
+      bottom: 75px;
+      transform: translateX(-50%);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.10);
+      z-index: 2;
+    }
+
+    .cake-top {
+      width: 160px;
+      height: 55px;
+      background: linear-gradient(to bottom, #FFD1DC, #FF85A2, #FFD1DC);
+      border-radius: 30px 30px 6px 6px;
+      position: absolute;
+      left: 50%;
+      bottom: 155px;
+      transform: translateX(-50%);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.10);
+      z-index: 4;
+    }
+
+    /* Candles containers - placed above cake layers */
+    .candles-container {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 3px;
+      pointer-events: auto;
+    }
+
+    #candles-middle {
+      bottom: 135px;
+      width: 180px;
+      z-index: 6;           /* FIX: candles above pink middle layer */
+    }
+
+    #candles-top {
+      bottom: 205px;
+      width: 120px;
+      z-index: 8;
+    }
+
+    /* Individual candle */
+    .candle {
+      width: 7px;
+      height: 27px;
+      background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
+      border-radius: 3px;
+      margin-bottom: -2px;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    .candle:hover {
+      transform: scale(1.2) translateY(-4px);
+      z-index: 20;
+    }
+
+    /* Flame animation + blow-out transition */
+    .flame {
+      position: absolute;
+      top: -14px;
+      left: -1.5px;
+      width: 10px;
+      height: 13px;
+      background: radial-gradient(circle, #FFFF80, #FFA500, #FF4500);
+      border-radius: 50% 50% 40% 40%;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1), opacity 0.2s ease;
+      box-shadow: 0 0 12px rgba(255, 80, 0, 0.9);
+      pointer-events: none;
+    }
+
+    .flame.lit {
+      transform: scale(1);
+      opacity: 1;
+      animation: flicker 0.8s infinite alternate ease-in-out;
+    }
+
+    /* Blow-out animation class: triggers a quick shrink & fade */
+    .flame.blowout {
+      animation: none !important;
+      transform: scale(0) !important;
+      opacity: 0 !important;
+      transition: transform 0.15s ease-out, opacity 0.12s ease-out;
+    }
+
+    @keyframes flicker {
+      0%   { transform: scale(1) translateX(0) rotate(-1deg); opacity: 0.95; }
+      25%  { transform: scale(1.08) translateX(1px) rotate(1deg); opacity: 1; }
+      50%  { transform: scale(1.12) translateX(-1px) rotate(0deg); opacity: 0.98; }
+      75%  { transform: scale(1.05) translateX(1px) rotate(-1deg); opacity: 1; }
+      100% { transform: scale(1.1) translateX(0) rotate(1deg); opacity: 0.96; }
+    }
+
+    /* Buttons */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 18px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: linear-gradient(to bottom, #e91e63, #c2185b);
+      color: white;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.14);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.16);
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    button:disabled {
+      background: linear-gradient(to bottom,#bdbdbd,#9e9e9e);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Message area */
+    .message {
+      margin: 16px auto 0;
+      display: inline-block;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(3px);
+      border-radius: 50px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      color: #222;
+      font-size: 1rem;
+      font-weight: 500;
+      max-width: 680px;
+    }
+
+    /* Festive decorations */
+    .decoration {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: #FFD700;
+      border-radius: 50%;
+      opacity: 0.65;
+      animation: float 4s infinite ease-in-out;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .decoration.d1 { top: 8%; left: 6%; background: #ffb347; }
+    .decoration.d2 { top: 16%; right: 12%; background: #ff6b6b; width: 25px; height: 25px; animation-duration: 3.5s; }
+    .decoration.d3 { bottom: 14%; left: 12%; background: #ffcc66; width: 28px; height: 28px; animation-duration: 4.2s; }
+    .decoration.d4 { bottom: 24%; right: 10%; background: #ff99cc; width: 22px; height: 22px; animation-duration: 3.8s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(4deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h1 { font-size: 1.9rem; }
+      .cake-container { width: 280px; height: 240px; }
+      .cake-base { width: 200px; }
+      .cake-middle { width: 160px; bottom: 66px; }
+      .cake-top { width: 140px; bottom: 135px; }
+      #candles-top { bottom: 180px; width: 100px; z-index: 8; }
+      #candles-middle { bottom: 115px; width: 140px; z-index: 6; }
+      .candle { width: 6px; height: 24px; }
+      .flame { width: 8px; height: 11px; top: -12px; left: -1px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="mainHeading">Happy Birthday!</h1>
+    <p class="subtitle">✨ Make a wish and blow out the candles! ✨</p>
+
+    <div class="decoration d1"></div>
+    <div class="decoration d2"></div>
+    <div class="decoration d3"></div>
+    <div class="decoration d4"></div>
+
+    <div class="cake-container">
+      <div class="cake">
+        <div class="cake-base"></div>
+        <div class="cake-middle"></div>
+        <!-- MIDDLE CANDLES (fixed stacking) -->
+        <div class="candles-container" id="candles-middle"></div>
+        <div class="cake-top"></div>
+        <!-- TOP CANDLES -->
+        <div class="candles-container" id="candles-top"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="lightAll">🎂 Light All Candles</button>
+      <button id="lightOne">🕯️ Light One Candle</button>
+      <button id="blowOut">💨 Blow Out Candles</button>
+    </div>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    (function() {
+      // ---- Get age from URL: supports ?20 or ?age=30 ----
+      let age = 26;
+      const queryString = window.location.search;
+      if (queryString) {
+        const rawParam = queryString.substring(1);
+        const directNumber = parseInt(rawParam, 10);
+        if (!isNaN(directNumber) && directNumber > 0) {
+          age = directNumber;
+        } else {
+          const params = new URLSearchParams(queryString);
+          const ageParam = params.get('age');
+          if (ageParam !== null) {
+            const parsed = parseInt(ageParam, 10);
+            if (!isNaN(parsed) && parsed > 0) age = parsed;
+          }
+        }
+      }
+
+      // Update title + heading
+      document.title = `🎉 Happy ${age}th Birthday! 🎉`;
+      const mainHeading = document.getElementById('mainHeading');
+      if (mainHeading) mainHeading.textContent = `Happy ${age}th Birthday! 🎂`;
+
+      // DOM elements
+      const topContainer = document.getElementById('candles-top');
+      const midContainer = document.getElementById('candles-middle');
+      const lightAllBtn = document.getElementById('lightAll');
+      const lightOneBtn = document.getElementById('lightOne');
+      const blowOutBtn = document.getElementById('blowOut');
+      const messageDiv = document.getElementById('message');
+
+      const TOTAL_CANDLES = age;
+      let litCount = 0;
+      const candles = []; // { wrapper, flame, isLit }
+
+      // Distribute candles: ~40% top, 60% middle
+      const topCount = Math.floor(TOTAL_CANDLES * 0.4);
+      const midCount = TOTAL_CANDLES - topCount;
+
+      // Helper: create a candle element with flame and click handler
+      function createCandle(container) {
+        const candleWrapper = document.createElement('div');
+        candleWrapper.className = 'candle';
+        
+        const flameElement = document.createElement('div');
+        flameElement.className = 'flame';
+        candleWrapper.appendChild(flameElement);
+        container.appendChild(candleWrapper);
+        
+        const candleObj = {
+          wrapper: candleWrapper,
+          flame: flameElement,
+          isLit: false
+        };
+        
+        // Toggle candle (light / extinguish) with immediate effect (no animation for single click)
+        candleWrapper.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (candleObj.isLit) {
+            // Extinguish instantly
+            candleObj.flame.classList.remove('lit');
+            // Also remove any leftover blowout class if present
+            candleObj.flame.classList.remove('blowout');
+            candleObj.isLit = false;
+            litCount = Math.max(0, litCount - 1);
+            if (lightAllBtn.disabled && litCount < TOTAL_CANDLES) {
+              lightAllBtn.disabled = false;
+            }
+          } else {
+            // Light this candle (no animation needed)
+            candleObj.flame.classList.add('lit');
+            candleObj.flame.classList.remove('blowout'); // ensure clean
+            candleObj.isLit = true;
+            litCount++;
+            if (litCount >= TOTAL_CANDLES) {
+              lightAllBtn.disabled = true;
+            }
+          }
+          updateMessage();
+        });
+        
+        return candleObj;
+      }
+      
+      // Generate all candles
+      for (let i = 0; i < topCount; i++) {
+        candles.push(createCandle(topContainer));
+      }
+      for (let i = 0; i < midCount; i++) {
+        candles.push(createCandle(midContainer));
+      }
+      
+      // Update message based on lit count
+      function updateMessage() {
+        if (litCount === 0) {
+          messageDiv.textContent = '🎁 Click "Light All Candles" or tap any candle to start the magic! ✨';
+        } else if (litCount >= TOTAL_CANDLES) {
+          messageDiv.innerHTML = `🎈 Happy ${age}th Birthday! 🎈 All candles are glowing — make a wish and blow them out! 💨`;
+        } else {
+          messageDiv.textContent = `🌟 Keep going! ${litCount} of ${TOTAL_CANDLES} candle${TOTAL_CANDLES !== 1 ? 's' : ''} lit. 🌟`;
+        }
+      }
+      
+      // Light all unlit candles with staggered joyful effect
+      function lightAllCandles() {
+        if (litCount >= TOTAL_CANDLES) {
+          lightAllBtn.disabled = true;
+          updateMessage();
+          return;
+        }
+        lightAllBtn.disabled = true;
+        let delay = 0;
+        const staggerMs = TOTAL_CANDLES > 70 ? 12 : (TOTAL_CANDLES > 40 ? 22 : 35);
+        
+        candles.forEach((candleObj) => {
+          if (!candleObj.isLit) {
+            setTimeout(() => {
+              if (!candleObj.isLit) {
+                // Ensure blowout class removed for fresh light
+                candleObj.flame.classList.remove('blowout');
+                candleObj.flame.classList.add('lit');
+                candleObj.isLit = true;
+                litCount++;
+                updateMessage();
+                if (litCount >= TOTAL_CANDLES) {
+                  lightAllBtn.disabled = true;
+                }
+              }
+            }, delay);
+            delay += staggerMs;
+          }
+        });
+        
+        setTimeout(() => {
+          if (litCount >= TOTAL_CANDLES) {
+            lightAllBtn.disabled = true;
+          } else {
+            const anyUnlit = candles.some(c => !c.isLit);
+            if (anyUnlit) lightAllBtn.disabled = false;
+            else lightAllBtn.disabled = true;
+          }
+          updateMessage();
+        }, delay + 50);
+      }
+      
+      // Light a single candle (first unlit)
+      function lightOneCandle() {
+        for (let candleObj of candles) {
+          if (!candleObj.isLit) {
+            candleObj.flame.classList.remove('blowout');
+            candleObj.flame.classList.add('lit');
+            candleObj.isLit = true;
+            litCount++;
+            break;
+          }
+        }
+        if (litCount >= TOTAL_CANDLES) {
+          lightAllBtn.disabled = true;
+        } else {
+          if (lightAllBtn.disabled) lightAllBtn.disabled = false;
+        }
+        updateMessage();
+      }
+      
+      // --- BLOW OUT all lit candles with animation ---
+      // Each flame gets a 'blowout' class that triggers scale(0) & fade, then after transition we remove 'lit' & 'blowout'
+      function blowOutCandles() {
+        // Find all lit candles
+        const litCandles = candles.filter(c => c.isLit);
+        if (litCandles.length === 0) {
+          // Nothing to blow out, but show a fun message
+          messageDiv.textContent = '💨 No candles are lit! Light some first, then blow! 🕯️';
+          setTimeout(() => updateMessage(), 1500);
+          return;
+        }
+        
+        // Disable buttons during animation to avoid conflicts (optional)
+        lightAllBtn.disabled = true;
+        lightOneBtn.disabled = true;
+        blowOutBtn.disabled = true;
+        
+        // For each lit candle: apply blowout animation class
+        litCandles.forEach(candleObj => {
+          // Stop current flicker animation, add blowout transition
+          candleObj.flame.classList.remove('lit');
+          // Force reflow to ensure animation triggers? Not necessary, but add class
+          candleObj.flame.classList.add('blowout');
+        });
+        
+        // After the transition duration (0.15s), actually reset the flame state and mark candles as unlit
+        setTimeout(() => {
+          litCandles.forEach(candleObj => {
+            // Remove blowout class and ensure flame is hidden
+            candleObj.flame.classList.remove('blowout');
+            // Already removed 'lit' earlier, but double-check
+            candleObj.flame.classList.remove('lit');
+            candleObj.isLit = false;
+          });
+          litCount = 0;
+          
+          // Re-enable buttons
+          lightAllBtn.disabled = false;
+          lightOneBtn.disabled = false;
+          blowOutBtn.disabled = false;
+          
+          updateMessage();
+          // Also add a little extra "whoosh" message feedback
+          messageDiv.textContent = '💨 Whoosh! You blew out the candles! Make a wish! ✨';
+          setTimeout(() => updateMessage(), 2000);
+        }, 160); // slightly longer than transition (150ms) to be smooth
+      }
+      
+      // Event listeners
+      lightAllBtn.addEventListener('click', lightAllCandles);
+      lightOneBtn.addEventListener('click', lightOneCandle);
+      blowOutBtn.addEventListener('click', blowOutCandles);
+      
+      // Initial message
+      updateMessage();
+    })();
+  </script>
+</body>
+</html>
